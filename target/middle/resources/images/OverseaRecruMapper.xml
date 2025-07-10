@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.dao.OverseaRecruDAO">
+ <select id="getOverseaRecru" resultType="com.example.model.RecruVO">
+  		SELECT *FROM recruitment
+		WHERE rckey = #{rckey}
+  
+</select>
+
+	<insert id="insertOverseaRecru" parameterType="com.example.model.RecruVO">
+		    INSERT INTO recruitment (
+        rckey, username, rctitle, rcwtype, rcsal, rcdeadline, 
+        rchist, rcedu, rcrank, rcpreffer, rccontent, rcloca, 
+        rcimg, rccount, rccestab, rccform, rccweb,rcstatus,rregion
+    ) VALUES (
+        seq_rckey.nextval,
+        #{username}, #{rctitle}, #{rcwtype}, #{rcsal}, #{rcdeadline},
+        #{rchist}, #{rcedu}, #{rcrank}, #{rcpreffer}, #{rccontent}, '해외',
+        0, <!-- 이미지 값 없으므로 숫자 0 -->
+        #{rccount}, #{rccestab}, #{rccform}, #{rccweb},'게시중',#{rregion}
+    )
+    			
+	</insert>
+	
+	<update id="updateOverseaRecru" parameterType="com.example.model.RecruVO">
+		UPDATE recruitment SET
+		TITLE = #{title},
+		CONTENT = #{content}
+		WHERE rckey = #{rckey}
+	</update>
+	
+	<delete id="deleteOverseaRecru" parameterType="com.example.model.RecruVO">
+		DELETE FROM recruitment
+		WHERE rckey = #{rckey}
+	</delete>
+
+<select id="getOverseaRecruList" resultType="com.example.model.RecruVO">
+    SELECT * FROM recruitment
+    where rcloca='해외' and rcstatus !='비활성'
+    ORDER BY rckey DESC
+</select>
+
+<select id="getOtherOverseaRecruList" resultType="com.example.model.RecruVO">    
+         SELECT * FROM recruitment
+    where rcloca='해외' and rcstatus !='비활성' and ROWNUM &lt;= 3
+    ORDER BY rckey DESC
+</select>
+
+<select id="getOverseaRecruCount" resultType="int">
+    SELECT COUNT(*) FROM recruitment
+    where rcloca='해외' and rcstatus !='비활성'
+</select>
+
+<select id="filterOverseaRecruitments" resultType="com.example.model.RecruVO" parameterType="map">
+    SELECT *
+    FROM recruitment
+    <!-- where rcloca='해외' -->
+    <where>
+    rcloca='해외' and rcstatus !='비활성'
+        <if test="rcedu != null and rcedu != ''">
+            AND rcedu = #{rcedu}
+        </if>
+        <if test="rchist != null and rchist != ''">
+            AND rchist = #{rchist}
+        </if>
+
+        <if test="employmentTypes != null and employmentTypes.size > 0">
+            AND rcwtype IN
+            <foreach item="type" collection="employmentTypes" open="(" separator="," close=")">
+                #{type}
+            </foreach>
+        </if>
+
+        <if test="companyTypes != null and companyTypes.size > 0">
+            AND rccform IN
+            <foreach item="type" collection="companyTypes" open="(" separator="," close=")">
+                #{type}
+            </foreach>
+        </if>
+    </where>
+
+    <choose>
+        <when test="sort == '최신순'">
+            ORDER BY rckey DESC
+        </when>
+        <when test="sort == '마감임박순'">
+            ORDER BY rcdeadline ASC
+        </when>
+        <when test="sort == '연봉순'">
+            ORDER BY rcsal DESC
+        </when>
+        <otherwise>
+            ORDER BY rckey DESC
+        </otherwise>
+    </choose>
+</select>
+
+</mapper>

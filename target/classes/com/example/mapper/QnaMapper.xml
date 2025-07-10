@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="com.example.dao.QnaDAO">
+  
+   <select id="getAllQna" resultType="com.example.model.QnaVO">
+      SELECT 
+    q.qnakey,
+    q.mkey,
+    q.id,
+    q.qnatitle,
+    q.qnacontents,
+    TO_CHAR(q.qnadate, 'YYYY-MM-DD') AS qnadate,
+    q.qna_status,
+    q.admin_title,
+    q.admin_contents,
+    q.answer_date,
+    q.username,
+    q.type
+  FROM qna q
+  ORDER BY q.qnakey DESC
+  </select>
+
+  <!-- 단일 조회 -->
+  <select id="getQnaById" parameterType="int" resultType="com.example.model.QnaVO">
+   SELECT * FROM qna WHERE qnakey = #{qnakey}
+  </select>
+  
+    <!-- 삭제 -->
+    <delete id="deleteQna" parameterType="int">
+        DELETE FROM qna WHERE qnakey = #{qnakey}
+    </delete>
+    
+    <!-- 질문 조회 -->
+<select id="selectQnaByKey" parameterType="int" resultType="com.example.model.QnaVO">
+    SELECT * FROM qna WHERE qnakey = #{qnakey}
+</select>
+    
+    
+<!-- 관리자 답변 등록 -->
+<update id="insertAdminReply" parameterType="com.example.model.QnaVO">
+    UPDATE qna
+    SET 
+        admin_title = #{admin_title},
+        admin_contents = #{admin_contents},
+        answer_date = SYSDATE,
+        qna_status = 'Y'
+    WHERE qnakey = #{qnakey}
+</update>
+
+
+    <!-- 미응답 QnA 개수 -->
+    <select id="getUnansweredQnaCount" resultType="int">
+        SELECT COUNT(*)
+        FROM qna
+        WHERE QNA_STATUS = 'N'
+    </select>
+
+    <!-- 응답 완료 QnA 개수 -->
+    <select id="getAnsweredQnaCount" resultType="int">
+        SELECT COUNT(*)
+        FROM qna
+        WHERE QNA_STATUS = 'Y'
+    </select>
+
+
+  <select id="getRecentQnaList" resultType="com.example.model.QnaVO">
+    <![CDATA[
+      SELECT *
+      FROM (
+        SELECT *
+        FROM qna
+        ORDER BY QNADATE  DESC
+      )
+      WHERE ROWNUM <= 3
+    ]]>
+  </select>
+
+
+
+
+</mapper>

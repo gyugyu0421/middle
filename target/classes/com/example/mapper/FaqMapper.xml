@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.dao.FaqDAO">
+
+    <select id="getAllFaqs" resultType="com.example.model.FaqVO">
+        SELECT ID, QUESTION, ANSWER FROM CFAQ
+    </select>
+
+    <select id="findByQuestion" parameterType="String" resultType="com.example.model.FaqVO">
+        SELECT ID, QUESTION, ANSWER
+        FROM CFAQ
+        WHERE QUESTION = #{question}
+    </select>
+
+</mapper>

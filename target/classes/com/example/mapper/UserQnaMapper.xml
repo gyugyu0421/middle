@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.dao.UserQnaDAO">
+
+  <!-- 전체 QnA 목록 -->
+  <select id="getQnaList" resultType="com.example.model.UserQnaVO">
+     SELECT qnakey, mkey, username, type, id, qnatitle, qnacontents,
+         qnadate, qna_status,
+         admin_title     AS adminTitle,
+         admin_contents  AS adminContents,
+         answer_date      AS adminDate
+  FROM qna
+  ORDER BY qnakey DESC
+  </select>
+
+  <!-- 특정 QnA 보기 -->
+  <select id="getQnaByKey" parameterType="int" resultType="com.example.model.UserQnaVO">
+     SELECT qnakey, mkey, id, qnatitle, qnacontents,
+         qnadate, qna_status,
+         admin_title     AS adminTitle,
+         admin_contents  AS adminContents,
+         answer_date     AS adminDate
+  FROM qna
+  WHERE qnakey = #{qnakey}
+  </select>
+
+  <!-- QnA 등록 -->
+  <insert id="insertQna" parameterType="com.example.model.UserQnaVO">
+  <selectKey keyProperty="qnakey" resultType="int" order="BEFORE">
+    SELECT seq_qnakey.NEXTVAL FROM dual
+  </selectKey>
+ INSERT INTO qna (
+    qnakey, mkey, id, username, type, qnatitle, qnacontents, qnadate, qna_status, admin_title, admin_contents, answer_date
+  ) VALUES (
+    #{qnakey},
+    #{mkey, jdbcType=INTEGER},
+    #{id, jdbcType=VARCHAR},
+    #{username, jdbcType=VARCHAR},
+    #{type, jdbcType=VARCHAR},
+    #{qnatitle, jdbcType=VARCHAR},
+    #{qnacontents, jdbcType=VARCHAR},
+    SYSDATE,
+    'N',
+    NULL,
+    NULL,
+    NULL
+  )
+</insert>
+
+  <!-- QnA 수정 -->
+  <update id="updateQna" parameterType="com.example.model.UserQnaVO">
+    UPDATE qna
+    SET qnatitle = #{qnatitle},
+        qnacontents = #{qnacontents}
+    WHERE qnakey = #{qnakey}
+  </update>
+
+  <!-- QnA 삭제 -->
+  <delete id="deleteQna" parameterType="int">
+    DELETE FROM qna WHERE qnakey = #{qnakey}
+  </delete>
+
+  <!-- 관리자 답변 등록 -->
+  <!--  <update id="answerQna" parameterType="com.example.model.UserQnaVO">
+    UPDATE qna
+    SET admin_title = #{admin_title},
+        admin_contents = #{admin_contents},
+        admin_date = SYSDATE,
+        qna_status = 'Y'
+    WHERE qnakey = #{qnakey}
+  </update> -->
+
+</mapper>

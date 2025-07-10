@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.example.dao.SignupDAO">
+
+    <insert id="insertMember" parameterType="com.example.model.MembersVO">
+        INSERT INTO members (
+            mkey, id, pw, username, email, phone, reg_date, status,
+            madd1, madd2, mbirth, cnum, cscale, type
+        ) VALUES (
+            seq_mKey.NEXTVAL,
+            #{id, jdbcType=VARCHAR}, #{pw, jdbcType=VARCHAR}, #{username, jdbcType=VARCHAR},
+            #{email, jdbcType=VARCHAR}, #{phone, jdbcType=VARCHAR}, SYSDATE, #{status, jdbcType=VARCHAR},
+            #{madd1, jdbcType=VARCHAR}, #{madd2, jdbcType=VARCHAR}, #{mbirth, jdbcType=DATE},
+            #{cnum, jdbcType=VARCHAR}, #{cscale, jdbcType=VARCHAR}, #{type, jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <select id="getNextMkey" resultType="java.lang.Integer">
+        SELECT seq_mKey.NEXTVAL FROM dual
+    </select>
+    
+    <select id="countById" parameterType="String" resultType="int">
+  SELECT COUNT(*) FROM members WHERE id = #{id}
+</select>
+
+</mapper>

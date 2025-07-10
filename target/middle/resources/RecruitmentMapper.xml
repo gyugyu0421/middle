@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.dao.RecruitmentDAO">
+
+ <select id="getAllRecruitments" resultType="com.example.model.RecruitmentVO">
+  SELECT 
+    r.rckey,
+    r.username,         
+    r.rctitle,
+    r.rcwtype,
+    r.rcsal,
+    r.rcdeadline,
+    r.rchist,
+    r.rcedu,
+    r.rcrank,
+    r.rcpreffer,
+    r.rccontent,
+    r.rcloca,           
+    r.rcimg,		    		
+    r.rccount,
+    r.rccestab,
+    r.rccform,
+    r.rccweb,
+    r.regdate,
+    r.rcstatus
+  FROM recruitment r
+
+</select>
+
+<select id="getRecentRecruitments" resultType="com.example.model.RecruitmentVO">
+  <![CDATA[
+    SELECT * FROM (
+      SELECT 
+        r.rckey,
+        r.username,
+        r.rctitle,
+        r.rcwtype,
+        r.rcsal,
+        r.rcdeadline,
+        r.rchist,
+        r.rcedu,
+        r.rcrank,
+        r.rcpreffer,
+        r.rccontent,
+        r.rcloca,           
+        r.rcimg,		    		
+        r.rccount,
+        r.rccestab,
+        r.rccform,
+        r.rccweb,
+        r.regdate,
+        r.rcstatus,
+        r.latitude,
+        r.longitude
+      FROM recruitment r
+      ORDER BY r.regdate DESC
+    )
+    WHERE ROWNUM <= 6
+  ]]>
+</select>
+
+
+
+
+<!--   <select id="getRecruitmentCount" resultType="int">
+    SELECT COUNT(*) FROM recruitment
+  </select> -->
+  
+<!-- 게시글 비활성화 -->
+<update id="deactivateRecruit" parameterType="int">
+  UPDATE recruitment
+  SET rcstatus = '비활성'
+  WHERE rckey = #{rckey}
+</update>
+
+<!-- 게시글 활성화 -->
+<update id="activateRecruit" parameterType="int">
+  UPDATE recruitment
+  SET rcstatus = '게시중'
+  WHERE rckey = #{rckey}
+</update>
+
+  <delete id="deleteRecruit">
+    DELETE FROM recruitment
+    WHERE rckey = #{rckey}
+  </delete>
+  
+	<select id="getRecruitmentByKey" parameterType="int" resultType="com.example.model.RecruitmentVO">
+  SELECT 
+    rckey,
+    username,
+    rctitle,
+    rcwtype,
+    rcsal,
+    rcdeadline,
+    rchist,
+    rcedu,
+    rcrank,
+    rcpreffer,
+    rccontent,
+    rcloca,
+    rregion,
+    rcimg,
+    rccount,
+    rccestab,
+    rccform,
+    rccweb,
+    regdate,
+    latitude,
+    longitude,
+    rcstatus
+  FROM recruitment
+  WHERE rckey = #{rckey}
+</select>
+
+
+<!-- 국내 채용공고 수 -->
+<select id="getDomesticRecruitmentCount" resultType="int">
+  SELECT COUNT(*) FROM recruitment WHERE rcloca = '국내'
+</select>
+
+<!-- 해외 채용공고 수 -->
+<select id="getOverseasRecruitmentCount" resultType="int">
+  SELECT COUNT(*) FROM recruitment WHERE rcloca = '해외'
+</select>
+
+<!-- 정규직 채용공고 수 -->
+<select id="getRegularRecruitmentCount" resultType="int">
+  SELECT COUNT(*) FROM recruitment WHERE rcwtype = '정규직'
+</select>
+
+<!-- 계약직 또는 프리랜서 채용공고 수 -->
+<select id="getContractFreelanceRecruitmentCount" resultType="int">
+  SELECT COUNT(*) FROM recruitment WHERE rcwtype IN ('계약직', '프리랜서')
+</select>
+
+<select id="getTotalRecruitmentCount" resultType="int">
+  SELECT COUNT(*) FROM recruitment
+</select>
+	
+
+
+</mapper>

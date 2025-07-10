@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.dao.FreeDAO">
+
+  <!-- 글 등록 -->
+  <insert id="insertFree" parameterType="com.example.model.FreeVO">
+    <selectKey keyProperty="fbkey" resultType="int" order="BEFORE">
+      SELECT seq_fbkey.NEXTVAL FROM dual
+    </selectKey>
+    INSERT INTO freeboard (
+  fbkey, mkey, id, fbtitle, fbcontent, fbdate, fbview, fblike, fbcategory, username
+) VALUES (
+  #{fbkey}, #{mkey}, #{id}, #{fbtitle}, #{fbcontent}, SYSDATE, #{fbview}, #{fblike}, #{fbcategory}, #{username}
+)
+  </insert>
+
+	<select id="getFreeList" resultType="com.example.model.FreeVO">
+	  SELECT
+	    f.fbkey, f.mkey, f.id, m.username,
+	    f.fbtitle, f.fbcontent, f.fbdate,
+	    f.fbview, f.fblike, f.fbcategory
+	  FROM freeboard f
+	  JOIN members m ON f.mkey = m.mkey AND f.id = m.id
+	  ORDER BY f.fbkey DESC
+	</select>
+
+	<!-- 전체 목록 조회 -->
+	<select id="getListByCategory" parameterType="string" resultType="com.example.model.FreeVO">
+  SELECT
+    f.fbkey, f.mkey, f.id, m.username,
+    f.fbtitle, f.fbcontent, f.fbdate,
+    f.fbview, f.fblike, f.fbcategory
+  FROM freeboard f
+  JOIN members m ON f.mkey = m.mkey AND f.id = m.id
+  WHERE f.fbcategory = #{category}
+  ORDER BY f.fbkey DESC
+</select>
+
+
+  <!-- 상세 조회 (JOIN 적용) -->
+  <select id="getFreeByKey" parameterType="int" resultType="com.example.model.FreeVO">
+    SELECT
+      f.fbkey, f.mkey, f.id, m.username,
+      f.fbtitle, f.fbcontent, f.fbdate,
+      f.fbview, f.fblike, f.fbcategory
+    FROM freeboard f
+    JOIN members m ON f.mkey = m.mkey AND f.id = m.id
+    WHERE f.fbkey = #{fbkey}
+  </select>
+
+  <!-- 글 수정 -->
+  <update id="updateFree" parameterType="com.example.model.FreeVO">
+    UPDATE freeboard
+    SET fbtitle = #{fbtitle},
+        fbcontent = #{fbcontent},
+        fbcategory = #{fbcategory}
+    WHERE fbkey = #{fbkey}
+  </update>
+
+  <!-- 글 삭제 -->
+  <delete id="deleteFree" parameterType="int">
+    DELETE FROM freeboard WHERE fbkey = #{fbkey}
+  </delete>
+  
+  <!-- 조회수 -->
+  <update id="increaseViewCount" parameterType="int">
+    UPDATE freeboard
+    SET fbview = NVL(fbview, 0) + 1
+    WHERE fbkey = #{fbkey}
+	</update>
+	
+	<!-- 추천수 -->
+	<update id="increaseLikeCount" parameterType="int">
+  UPDATE freeboard
+  SET fblike = NVL(fblike, 0) + 1
+  WHERE fbkey = #{fbkey}
+	</update>
+
+</mapper>

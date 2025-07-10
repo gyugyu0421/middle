@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.dao.AdminFreeboardDAO">
+
+    <!-- 카테고리별 게시글 조회 -->
+    <select id="getListByCategory" resultType="com.example.model.AdminFreeboardVO">
+        SELECT *
+        FROM freeboard
+        WHERE fbcategory = #{fbcategory}
+        ORDER BY fbdate DESC
+    </select>
+    
+    <select id="getAllList" resultType="com.example.model.AdminFreeboardVO">
+    SELECT *
+    FROM freeboard
+    ORDER BY fbdate DESC
+	</select>
+
+	<!-- 게시글 등록 -->
+<insert id="insertPost" parameterType="com.example.model.AdminFreeboardVO">
+    INSERT INTO freeboard
+    (FBKEY, MKEY, ID, FBTITLE, FBCONTENT, FBDATE, FBVIEW, FBLIKE, FBCATEGORY, USERNAME)
+    VALUES
+    (seq_fbkey.NEXTVAL, #{mkey}, #{id}, #{fbtitle}, #{fbcontent}, SYSDATE, 0, 0, #{fbcategory},#{username})
+</insert>
+
+<!-- 최근 공지사항 3개 조회 -->
+<select id="getRecentNotices" resultType="com.example.model.AdminFreeboardVO">
+  <![CDATA[
+    SELECT * FROM (
+      SELECT * FROM FREEBOARD
+      WHERE FBCATEGORY = '공지'
+      ORDER BY FBDATE DESC
+    )
+    WHERE ROWNUM <= 3
+  ]]>
+</select>
+
+<!-- 인기 게시글 3개 조회 (조회수 순) -->
+<select id="getPopularPosts" resultType="com.example.model.AdminFreeboardVO">
+  <![CDATA[
+    SELECT * FROM (
+      SELECT * FROM FREEBOARD
+      ORDER BY FBLIKE DESC
+    )
+    WHERE ROWNUM <= 3
+  ]]>
+</select>
+
+<delete id="deletePost" parameterType="int">
+  DELETE FROM freeboard WHERE fbkey = #{fbkey}
+</delete>
+
+<select id="getFreeboardDetail" parameterType="int" resultType="com.example.model.AdminFreeboardVO">
+    SELECT * FROM FREEBOARD WHERE fbkey = #{fbkey}
+</select>
+
+
+
+
+</mapper>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.dao.ResumeDAO">
+ <select id="getResume" resultType="com.example.model.ResumeVO">
+  		SELECT *FROM resume
+		WHERE rskey = #{rskey}
+  
+</select>
+
+
+	 <!-- 글 등록 -->
+<!--   <insert id="insertResume" parameterType="com.example.dao.ResumeDAO"> -->
+  <insert id="insertResume" parameterType="com.example.model.ResumeVO">
+    INSERT INTO resume (
+  rskey,mkey,id,rsname,rscontect,rsemail,rsadd,rshistory,
+  rspart,rshstart,rshend,rsedu,rsmajor,rsestart,
+  rseend,rsskname,rsskcontent,rscletter,rstitle,rsapplied,rsawards
+) VALUES (
+  seq_rskey.NEXTVAL, #{mkey}, #{id}, #{rsname}, #{rscontect},#{rsemail}, #{rsadd}, #{rshistory},
+  #{rspart}, #{rshstart}, #{rshend}, #{rsedu}, #{rsmajor},#{rsestart},
+   #{rseend}, #{rsskname},#{rsskcontent}, #{rscletter}, #{rstitle},#{rsapplied},#{rsawards}
+)
+  </insert>
+	
+	
+
+	
+	<update id="updateResume" parameterType="com.example.model.ResumeVO">
+		UPDATE resume SET
+        rskey = #{rskey},
+        rsname = #{rsname}, 
+        rscontect = #{rscontect}, 
+        rsemail = #{rsemail}, 
+        rsadd = #{rsadd}, 
+        rshistory = #{rshistory}, 
+        rspart = #{rspart}, 
+        rshstart = #{rshstart}, 
+        rshend = #{rshend}, 
+        rsedu = #{rsedu}, 
+        rsmajor = #{rsmajor}, 
+        rsestart = #{rsestart}, 
+        rseend = #{rseend}, 
+        rsskname = #{rsskname}, 
+        rsskcontent = #{rsskcontent}, 
+        rscletter = #{rscletter},
+        retitle =#{rstitle},
+        rsapplied = #{rsapplied},
+        rsawards = #{rsawards}
+        
+		WHERE rskey = #{rskey}
+	</update>
+	
+	<delete id="deleteResume" parameterType="com.example.model.ResumeVO">
+		DELETE FROM resume
+		WHERE rskey = #{rskey}
+	</delete>
+
+<select id="getResumeList" resultType="com.example.model.ResumeVO">
+    SELECT * FROM resume
+ 	WHERE mkey=#{mkey}
+    ORDER BY rskey DESC
+</select>
+
+<select id="getOtherResumeList" resultType="com.example.model.ResumeVO">    
+         SELECT * FROM resume
+    where ROWNUM &lt;= 3
+    ORDER BY rskey DESC
+</select>
+
+<select id="getResumeCount" resultType="int">
+    SELECT COUNT(*) FROM resume
+</select>
+
+</mapper>

@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.dao.MemberDAO">
+<select id="getMemberList" resultType="com.example.model.MemberVO">
+  SELECT
+    mkey,
+    id,
+    pw,
+    username,
+    email,
+    phone,
+    reg_date AS regdate,
+    status,
+    mAdd1 AS add1,
+    mAdd2 AS add2,
+    mBirth AS birth,
+    cNum,
+    cScale,
+    type
+  FROM members
+  WHERE type !='관리자'
+</select>
+
+<select id="getRecentMembers" resultType="com.example.model.MemberVO">
+  <![CDATA[
+    SELECT *
+    FROM (
+      SELECT
+        mkey,
+        id,
+        username,
+        email,
+        phone,
+        reg_date AS regdate,
+        status,
+        type
+      FROM members
+      WHERE type != '관리자'
+      ORDER BY reg_date DESC
+    )
+    WHERE ROWNUM <= 4
+  ]]>
+</select>
+
+
+
+<select id="getTotalMemberCount" resultType="int">
+    SELECT COUNT(*) 
+  FROM members
+  WHERE type = '일반'
+</select>
+
+<!-- 월 별 가입자  -->
+<select id="countJanuary" resultType="int">
+    SELECT COUNT(*) FROM members  WHERE type = '일반' AND TO_CHAR(reg_date, 'MM') = '01'
+</select>
+<select id="countFebruary" resultType="int">
+    SELECT COUNT(*) FROM members  WHERE type = '일반' AND TO_CHAR(reg_date, 'MM') = '02'
+</select>
+<select id="countMarch" resultType="int">
+    SELECT COUNT(*) FROM members  WHERE type = '일반' AND TO_CHAR(reg_date, 'MM') = '03'
+</select>
+<select id="countApril" resultType="int">
+    SELECT COUNT(*) FROM members  WHERE type = '일반' AND TO_CHAR(reg_date, 'MM') = '04'
+</select>
+<select id="countMay" resultType="int">
+    SELECT COUNT(*) FROM members  WHERE type = '일반' AND TO_CHAR(reg_date, 'MM') = '05'
+</select>
+<select id="countJun" resultType="int">
+    SELECT COUNT(*) FROM members  WHERE type = '일반' AND TO_CHAR(reg_date, 'MM') = '06'
+</select>
+
+<select id="getMemberByMKey" parameterType="long" resultType="com.example.model.MemberVO">
+  SELECT 
+    mkey,
+    id,
+    pw,
+    username,
+    email,
+    phone,
+    reg_date AS regdate,
+    status,
+    mAdd1 AS add1,
+    mAdd2 AS add2,
+    mBirth AS birth,
+    cNum,
+    type,
+    cScale
+  FROM members
+  WHERE mkey = #{mkey}
+</select>
+
+<select id="getTotalCompanyCount" resultType="int">
+    SELECT COUNT(*) 
+  FROM members
+  WHERE type = '기업'
+</select>
+
+<select id="CompanycountJanuary" resultType="int">
+    SELECT COUNT(*) FROM members  WHERE type = '기업' AND TO_CHAR(reg_date, 'MM') = '01'
+</select>
+<select id="CompanycountFebruary" resultType="int">
+    SELECT COUNT(*) FROM members  WHERE type = '기업' AND TO_CHAR(reg_date, 'MM') = '02'
+</select>
+<select id="CompanycountMarch" resultType="int">
+    SELECT COUNT(*) FROM members  WHERE type = '기업' AND TO_CHAR(reg_date, 'MM') = '03'
+</select>
+<select id="CompanycountApril" resultType="int">
+    SELECT COUNT(*) FROM members  WHERE type = '기업' AND TO_CHAR(reg_date, 'MM') = '04'
+</select>
+<select id="CompanycountMay" resultType="int">
+    SELECT COUNT(*) FROM members  WHERE type = '기업' AND TO_CHAR(reg_date, 'MM') = '05'
+</select>
+<select id="CompanycountJun" resultType="int">
+    SELECT COUNT(*) FROM members  WHERE type = '기업' AND TO_CHAR(reg_date, 'MM') = '06'
+</select>
+
+
+<delete id="deleteMember" parameterType="Long">
+     DELETE FROM members WHERE mkey = #{value, jdbcType=BIGINT}
+</delete>
+
+<!-- 회원 상태(status)를 '비활성'으로 변경 -->
+<update id="deactivateMember" parameterType="long">
+  UPDATE members
+  SET status = '정지'
+  WHERE mkey = #{mkey}
+</update>
+
+<!-- 회원 상태를 '정상'으로 변경 -->
+<update id="activateMember" parameterType="long">
+  UPDATE members
+  SET status = '정상'
+  WHERE mkey = #{mkey}
+</update>
+
+
+    <select id="selectByIdAndPw" parameterType="map" resultType="com.example.model.MemberVO">
+        SELECT *
+        FROM members
+        WHERE id = #{id}
+          AND pw = #{pw}
+          AND type = '관리자'
+          AND status = '정상'
+    </select>
+
+
+    <!-- 최근 2주 일반 사용자 가입자 수 -->
+    <select id="countRecentUserJoins" resultType="int">
+        SELECT COUNT(*) 
+        FROM members 
+        WHERE reg_date >= SYSDATE - 14 AND type = '일반'
+    </select>
+
+    <!-- 이전 2주 일반 사용자 가입자 수 -->
+    <select id="countPreviousUserJoins" resultType="int">
+        SELECT COUNT(*) 
+        FROM members 
+        WHERE reg_date BETWEEN SYSDATE - 28 AND SYSDATE - 15
+        AND type = '일반'
+    </select>
+
+    <!-- 최근 2주 기업 회원 가입자 수 -->
+    <select id="countRecentCompanyJoins" resultType="int">
+        SELECT COUNT(*) 
+        FROM members 
+        WHERE reg_date >= SYSDATE - 14 AND type = '기업'
+    </select>
+
+    <!-- 이전 2주 기업 회원 가입자 수 -->
+    <select id="countPreviousCompanyJoins" resultType="int">
+        SELECT COUNT(*) 
+        FROM members 
+        WHERE reg_date BETWEEN SYSDATE - 28 AND SYSDATE - 15
+        AND type = '기업'
+    </select>
+
+
+
+</mapper>
