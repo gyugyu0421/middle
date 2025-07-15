@@ -20,7 +20,7 @@ import com.example.service.QnaService;
 import com.example.service.RecruitmentService;
 import com.example.service.ReportService;
 import com.example.service.AdminResumeService;
-
+// import 하자!
 
 @Controller
 public class AdminController {
